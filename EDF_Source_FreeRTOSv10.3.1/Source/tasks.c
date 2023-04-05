@@ -2978,21 +2978,34 @@ BaseType_t xTaskIncrementTick( void )
 						currently executing task. */
 						
 						
-					/*########################################Samy_EDF_Edits_Start########################################*/
-					/* Tak a new action of changing the way switching context decision is made*/
-					#if (configUSE_EDF_SCHEDULER == 1)
-					
-					#endif
-					/*########################################Samy_EDF_Edits_End########################################*/
+						/*########################################Samy_EDF_Edits_Start########################################*/
+						#if (configUSE_EDF_SCHEDULER == 1)
+						/* Take a new action of changing the way switching context decision is made
+						 * as shown in the next if condition, xSwitchRequired flag is raised based on xItemValue retrieved by the
+						   macro listGET_LIST_ITEM_VALUE.
+						 * It is known that xItemValue is used as a place holder to carry the deadline of the task
+						* For clearity:- pxTCB is a structure used to save data related to Task
+														 xStateListItem is member inside pxTCB structure. it is a list have some values in it
+														 xItemValue is an item in the xStateListItem that holds a number (in this implementation it holds the task deadline)
+						*/
 						
+						if (listGET_LIST_ITEM_VALUE( &(pxTCB->xStateListItem) ) > listGET_LIST_ITEM_VALUE( &(pxCurrentTCB->xStateListItem) ))
+						{
+							xSwitchRequired = pdTRUE;
+						}
+						/*########################################Samy_EDF_Edits_End########################################*/
+						#else
 						if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
 						{
 							xSwitchRequired = pdTRUE;
 						}
+						#endif
 						else
 						{
 							mtCOVERAGE_TEST_MARKER();
 						}
+						
+						
 					}
 					#endif /* configUSE_PREEMPTION */
 				}
