@@ -56,7 +56,16 @@ typedef enum
 #define IDLE_HOOK_PIN	PIN0
 #define IDLE_HOOK_PORT	PORT_0
 #define TICK_HOOK_PIN	PIN4
-#define TICK_HOOK_PORT	PORT_0				
+#define TICK_HOOK_PORT	PORT_0
+
+#define Tx_HOOK_PORT	PORT_1
+#define T1_HOOK_PIN		PIN1
+#define T2_HOOK_PIN		PIN2
+#define T3_HOOK_PIN		PIN3
+#define T4_HOOK_PIN		PIN4
+#define T5_HOOK_PIN		PIN5
+#define T6_HOOK_PIN		PIN6
+
 
 TaskHandle_t T1_Handle	= NULL;
 TaskHandle_t T2_Handle	= NULL;
@@ -69,14 +78,87 @@ QueueHandle_t Q_T1_Button1 	=NULL;
 QueueHandle_t Q_T2_Button2 	=NULL;
 QueueHandle_t Q_T3_String 	=NULL;
 
-uint32 T1_IN=0 , T1_OUT=0 , T1_Total=0;
-uint32 T2_IN=0 , T2_OUT=0 , T2_Total=0;
-uint32 T3_IN=0 , T3_OUT=0 , T3_Total=0;
-uint32 T4_IN=0 , T4_OUT=0 , T4_Total=0;
-uint32 T5_IN=0 , T5_OUT=0 , T5_Total=0;
-uint32 T6_IN=0 , T6_OUT=0 , T6_Total=0;
+uint32 T1_IN=0 , T1_Total=0;
+uint32 T2_IN=0 , T2_Total=0;
+uint32 T3_IN=0 , T3_Total=0;
+uint32 T4_IN=0 , T4_Total=0;
+uint32 T5_IN=0 , T5_Total=0;
+uint32 T6_IN=0 , T6_Total=0;
 uint32 SysTime = 0;
 uint32 CPU_Load = 0;
+
+/* Record the tick in which you entered the task and raise the corresppnding pin HIGH */
+#undef traceTASK_SWITCHED_IN
+#define traceTASK_SWITCHED_IN() do{\
+									if((uint32)pxCurrentTCB->pxTaskTag == 1)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T1_HOOK_PIN , PIN_IS_HIGH);\
+										T1_IN = T1TC;\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 2)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T2_HOOK_PIN , PIN_IS_HIGH);\
+										T2_IN = T1TC;\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 3)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T3_HOOK_PIN , PIN_IS_HIGH);\
+										T3_IN = T1TC;\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 4)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T4_HOOK_PIN , PIN_IS_HIGH);\
+										T4_IN = T1TC;\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 5)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T5_HOOK_PIN , PIN_IS_HIGH);\
+										T5_IN = T1TC;\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 6)\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T6_HOOK_PIN , PIN_IS_HIGH);\
+										T6_IN = T1TC;\
+									}\
+									}while(0);
+
+/* On leaving each task, calculate the total execution time of each task. Use all tasks execution time with
+   the CPU all execution time to calculate the CPU load >> CPU Load = sum of tasks execution time / All CPU run time*/
+#undef traceTASK_SWITCHED_OUT
+#define traceTASK_SWITCHED_OUT() do{\
+									if((uint32)pxCurrentTCB->pxTaskTag == 1 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T1_HOOK_PIN , PIN_IS_LOW );\
+										T1_Total += (T1TC - T1_IN );\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 2 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T2_HOOK_PIN , PIN_IS_LOW );\
+										T2_Total += (T1TC - T2_IN );\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 3 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T3_HOOK_PIN , PIN_IS_LOW );\
+										T3_Total += (T1TC - T3_IN );\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 4 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T4_HOOK_PIN , PIN_IS_LOW );\
+										T4_Total += (T1TC - T4_IN );\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 5 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T5_HOOK_PIN , PIN_IS_LOW );\
+										T5_Total += (T1TC - T5_IN );\
+									}\
+									else if((uint32)pxCurrentTCB->pxTaskTag == 6 )\
+									{\
+										GPIO_write(Tx_HOOK_PORT , T6_HOOK_PIN , PIN_IS_LOW );\
+										T6_Total += (T1TC - T6_IN );\
+									}\
+									SysTime = T1TC;\
+									CPU_Load = ( (((T1_Total + T2_Total + T3_Total + T4_Total + T5_Total + T6_Total) / (float)SysTime )) * 100 );\
+									}while(0);
 
 /*########################################Samy_EDF_Edits_End########################################*/	
 
@@ -126,7 +208,7 @@ void T1_Button1(void * pvParameter)
 	//Stores the current and previous pin reading to decide the button status
 	volatile pinState_t currentState = PIN_IS_LOW;
 	volatile pinState_t previousState = PIN_IS_LOW;
-	
+	vTaskSetApplicationTaskTag(NULL , (void *) 1); //(TaskHookFunction_t)
 	while(1)
 	{
 		currentState = GPIO_read(BUTTON_1_PORT , BUTTON_1_PIN);
@@ -175,7 +257,8 @@ void T2_Button2(void * pvParameter)
 	//Stores the current and previous pin reading to decide the button status
 	volatile pinState_t currentState = PIN_IS_LOW;
 	volatile pinState_t previousState = PIN_IS_LOW;
-	
+	vTaskSetApplicationTaskTag(NULL , (void *) 2);
+
 	while(1)
 	{
 		currentState = GPIO_read(BUTTON_2_PORT , BUTTON_2_PIN);
@@ -217,7 +300,7 @@ void T3_PeriodicString( void * pvParameters )
 {
 	TickType_t previousWakeTime = xTaskGetTickCount();
 	uint8 T3_isRunning = 1;
-	
+	vTaskSetApplicationTaskTag(NULL , (void *) 3);
 	while(1)
 	{
 		if(Q_T3_String != NULL)
@@ -233,7 +316,7 @@ void T3_PeriodicString( void * pvParameters )
 {
 	TickType_t previousWakeTime = xTaskGetTickCount();
 	char T3_isRunning_String[] = "Task 3 is Running\n";
-	
+	vTaskSetApplicationTaskTag(NULL , (void *) 3);
 	while(1)
 	{
 		if(Q_T3_String != NULL)
@@ -256,7 +339,7 @@ void T4_UART_Print( void * pvParameters )
 	TickType_t previousWakeTime = xTaskGetTickCount();
 	signed char buffer_String[100];
 	Button_Status_ENM buffer_ButtonStatus;
-		
+	vTaskSetApplicationTaskTag(NULL , (void *) 4);
 	while(1)
 	{
 		if(Q_T3_String != NULL)
@@ -319,9 +402,10 @@ void T5_Load1( void * pvParameters )
 {
 		uint32 localCounter = 0;
 		TickType_t previousWakeTime = xTaskGetTickCount();
+		vTaskSetApplicationTaskTag(NULL , (void *) 5);
 		while(1)
 		{
-			for(localCounter = 0 ; localCounter<33300 ;localCounter++)
+			for(localCounter = 0 ; localCounter<10002 ;localCounter++)
 			{
 				localCounter=localCounter;
 			}
@@ -334,10 +418,10 @@ void T6_Load2( void * pvParameters )
 {
 		uint32 localCounter = 0;
 		TickType_t previousWakeTime = xTaskGetTickCount();
-	
+		vTaskSetApplicationTaskTag(NULL , (void *) 6);
 		while(1)
 		{
-			for(localCounter = 0 ; localCounter<33300 ;localCounter++)
+			for(localCounter = 0 ; localCounter<12530 ;localCounter++)
 			{
 				localCounter=localCounter;
 			}

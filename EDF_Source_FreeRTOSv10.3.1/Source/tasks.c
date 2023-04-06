@@ -3618,16 +3618,6 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
 	any. */
 	portALLOCATE_SECURE_CONTEXT( configMINIMAL_SECURE_STACK_SIZE );
 	
-	/*########################################Samy_EDF_Edits_Start########################################*/
-	/* This portion updates Idel Task period to be always the farest dead line in the system
-		*/	
-	#if (configUSE_EDF_SCHEDULER == 1)
-	{
-		TaskHandle_t PointerToIdelTaskTCB = xTaskGetIdleTaskHandle();
-		listSET_LIST_ITEM_VALUE( &(PointerToIdelTaskTCB->xStateListItem), (PointerToIdelTaskTCB->xTaskPeriod) + xTaskGetTickCount());
-	}
-	#endif
-	/*########################################Samy_EDF_Edits_End########################################*/	
 	for( ;; )
 	{
 		/* See if any tasks have deleted themselves - if so then the idle task
@@ -3644,6 +3634,16 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
 		}
 		#endif /* configUSE_PREEMPTION */
 
+		
+		/*########################################Samy_EDF_Edits_Start########################################*/
+		/* This portion updates Idel Task period to be always the farest dead line in the system*/	
+		#if (configUSE_EDF_SCHEDULER == 1)
+		{
+			TaskHandle_t PointerToIdelTaskTCB = xTaskGetIdleTaskHandle();
+			listSET_LIST_ITEM_VALUE( &(PointerToIdelTaskTCB->xStateListItem), (PointerToIdelTaskTCB->xTaskPeriod) + xTaskGetTickCount());
+		}
+		#endif
+		/*########################################Samy_EDF_Edits_End########################################*/	
 		#if ( ( configUSE_PREEMPTION == 1 ) && ( configIDLE_SHOULD_YIELD == 1 ) )
 		{
 			/* When using preemption tasks of equal priority will be
@@ -3854,7 +3854,13 @@ UBaseType_t uxPriority;
 	vListInitialise( &xDelayedTaskList1 );
 	vListInitialise( &xDelayedTaskList2 );
 	vListInitialise( &xPendingReadyList );
-
+	
+	/*########################################Samy_EDF_Edits_Start########################################*/	
+	#if (configUSE_EDF_SCHEDULER == 1)
+	vListInitialise(&xReadyTasksListEDF);
+	#endif
+	/*########################################Samy_EDF_Edits_End########################################*/	
+	
 	#if ( INCLUDE_vTaskDelete == 1 )
 	{
 		vListInitialise( &xTasksWaitingTermination );
@@ -3872,11 +3878,7 @@ UBaseType_t uxPriority;
 	pxDelayedTaskList = &xDelayedTaskList1;
 	pxOverflowDelayedTaskList = &xDelayedTaskList2;
 	
-/*########################################Samy_EDF_Edits_Start########################################*/	
-#if (configUSE_EDF_SCHEDULER == 1)
-	vListInitialise(&xReadyTasksListEDF);
-#endif
-/*########################################Samy_EDF_Edits_End########################################*/	
+
 }
 /*-----------------------------------------------------------*/
 

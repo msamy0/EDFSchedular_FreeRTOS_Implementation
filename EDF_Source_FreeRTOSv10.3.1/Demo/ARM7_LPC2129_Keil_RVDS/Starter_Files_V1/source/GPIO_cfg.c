@@ -5,10 +5,10 @@
 
 PinConfig_t PinConfig_array[] = 
 							{
-								{PORT_0, PIN0, OUTPUT},
-								{PORT_0, PIN1, INPUT}, /*Button 1*/
-								{PORT_0, PIN2, INPUT},/*Button 2*/
-								{PORT_0, PIN3, OUTPUT},
+								{PORT_0, PIN0, OUTPUT}, /*Idle Hook*/
+								{PORT_0, PIN1, INPUT},  /*Button 1*/
+								{PORT_0, PIN2, INPUT},  /*Button 2*/
+								{PORT_0, PIN3, OUTPUT}, /*Tick Hook*/
 								{PORT_0, PIN4, OUTPUT},
 								{PORT_0, PIN5, OUTPUT},
 								{PORT_0, PIN6, OUTPUT},
@@ -22,12 +22,12 @@ PinConfig_t PinConfig_array[] =
 								{PORT_0, PIN15, OUTPUT},
 								
 								{PORT_1, PIN0, OUTPUT},
-								{PORT_1, PIN1, OUTPUT},
-								{PORT_1, PIN2, OUTPUT},
-								{PORT_1, PIN3, OUTPUT},
-								{PORT_1, PIN4, OUTPUT},
-								{PORT_1, PIN5, OUTPUT},
-								{PORT_1, PIN6, OUTPUT},
+								{PORT_1, PIN1, OUTPUT}, /*Task 1 Trace Hook Pin*/
+								{PORT_1, PIN2, OUTPUT}, /*Task 2 Trace Hook Pin*/
+								{PORT_1, PIN3, OUTPUT}, /*Task 3 Trace Hook Pin*/
+								{PORT_1, PIN4, OUTPUT}, /*Task 4 Trace Hook Pin*/
+								{PORT_1, PIN5, OUTPUT}, /*Task 5 Trace Hook Pin*/
+								{PORT_1, PIN6, OUTPUT}, /*Task 6 Trace Hook Pin*/
 								{PORT_1, PIN7, OUTPUT},
 								{PORT_1, PIN8, OUTPUT},
 								{PORT_1, PIN9, OUTPUT},

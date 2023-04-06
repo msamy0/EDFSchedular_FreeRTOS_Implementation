@@ -72,11 +72,15 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay					1
 
-
+/*########################################Samy_EDF_Edits_Start########################################*/	
 #define configUSE_EDF_SCHEDULER   				1
 #define INCLUDE_xTaskGetIdleTaskHandle			1
 #define configSUPPORT_DYNAMIC_ALLOCATION		1
-#define configUSE_QUEUE_SETS								1
+#define configUSE_QUEUE_SETS					1
+#define configUSE_APPLICATION_TASK_TAG			1
 
+
+
+/*########################################Samy_EDF_Edits_End########################################*/	
 
 #endif /* FREERTOS_CONFIG_H */
