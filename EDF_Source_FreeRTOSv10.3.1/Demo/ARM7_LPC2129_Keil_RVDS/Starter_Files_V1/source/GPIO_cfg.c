@@ -5,9 +5,9 @@
 
 PinConfig_t PinConfig_array[] = 
 							{
-								{PORT_0, PIN0, INPUT},
-								{PORT_0, PIN1, OUTPUT},
-								{PORT_0, PIN2, OUTPUT},
+								{PORT_0, PIN0, OUTPUT},
+								{PORT_0, PIN1, INPUT}, /*Button 1*/
+								{PORT_0, PIN2, INPUT},/*Button 2*/
 								{PORT_0, PIN3, OUTPUT},
 								{PORT_0, PIN4, OUTPUT},
 								{PORT_0, PIN5, OUTPUT},

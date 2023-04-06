@@ -182,7 +182,7 @@ void xSerialPutChar(signed char cOutChar)
 
 void vUART_ISRHandler( void )
 {
-signed char cChar;
+volatile signed char cChar;
 unsigned char ucInterrupt;
 
 	ucInterrupt = U1IIR;

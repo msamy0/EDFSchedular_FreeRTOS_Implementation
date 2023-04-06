@@ -223,10 +223,10 @@ count overflows. */
 		vListInsertEnd( &( pxReadyTasksLists[ ( pxTCB )->uxPriority ] ), &( ( pxTCB )->xStateListItem ) ); \
 		tracePOST_MOVED_TASK_TO_READY_STATE( pxTCB )
 #else
-	#define prvAddTaskToReadyList( pxTCB )																\
-		traceMOVED_TASK_TO_READY_STATE( pxTCB );														\
-		taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );												\
-		vListInsert( &(xReadyTasksListEDF), &( ( pxTCB )->xStateListItem ) ); \
+	#define prvAddTaskToReadyList( pxTCB )\
+		traceMOVED_TASK_TO_READY_STATE( pxTCB );\
+		taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );\
+		vListInsert( &(xReadyTasksListEDF), &( ( pxTCB )->xStateListItem ) );\
 		tracePOST_MOVED_TASK_TO_READY_STATE( pxTCB )	
 #endif
 /*########################################Samy_EDF_Edits_End########################################*/	
@@ -764,6 +764,7 @@ static void prvAddNewTaskToReadyList( TCB_t *pxNewTCB ) PRIVILEGED_FUNCTION;
  * of course it will initialize the period parameter added in the TCB block strcuture edited earlier
 */
 #if (configUSE_EDF_SCHEDULER == 1 )
+
 BaseType_t xTaskPeriodicCreate(	TaskFunction_t pxTaskCode,
 							const char * const pcName,		/*lint !e971 Unqualified char types are allowed for strings and single characters only. */
 							const configSTACK_DEPTH_TYPE usStackDepth,
@@ -2989,7 +2990,7 @@ BaseType_t xTaskIncrementTick( void )
 														 xItemValue is an item in the xStateListItem that holds a number (in this implementation it holds the task deadline)
 						*/
 						
-						if (listGET_LIST_ITEM_VALUE( &(pxTCB->xStateListItem) ) > listGET_LIST_ITEM_VALUE( &(pxCurrentTCB->xStateListItem) ))
+						if (listGET_LIST_ITEM_VALUE( &(pxTCB->xStateListItem) ) < listGET_LIST_ITEM_VALUE( &(pxCurrentTCB->xStateListItem) ))
 						{
 							xSwitchRequired = pdTRUE;
 						}

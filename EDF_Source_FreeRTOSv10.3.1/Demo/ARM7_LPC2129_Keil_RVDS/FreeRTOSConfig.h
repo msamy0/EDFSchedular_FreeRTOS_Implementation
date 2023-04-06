@@ -70,9 +70,13 @@ to exclude the API function. */
 #define INCLUDE_vTaskCleanUpResources	0
 #define INCLUDE_vTaskSuspend			1
 #define INCLUDE_vTaskDelayUntil			1
-#define INCLUDE_vTaskDelay				1
-#define configUSE_EDF_SCHEDULER   1
-#define INCLUDE_xTaskGetIdleTaskHandle 1
+#define INCLUDE_vTaskDelay					1
+
+
+#define configUSE_EDF_SCHEDULER   				1
+#define INCLUDE_xTaskGetIdleTaskHandle			1
+#define configSUPPORT_DYNAMIC_ALLOCATION		1
+#define configUSE_QUEUE_SETS								1
 
 
 #endif /* FREERTOS_CONFIG_H */
